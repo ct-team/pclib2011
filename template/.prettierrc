@@ -1,0 +1,15 @@
+{
+  "singleQuote": true,
+  "htmlWhitespaceSensitivity": "ignore",
+  "trailingComma": "none",
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": { "parser": "html" }
+    },
+    {
+      "files": "*.ejs",
+      "options": { "parser": "html" }
+    }
+  ]
+}

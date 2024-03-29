@@ -1,0 +1,13 @@
+{
+  "name": "ct-team/pclib2011",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "",
+  "scripts": {
+    "docs": "cd docs && gitbook serve",
+    "docs:deploy": "bash ./deploy-docs.sh"
+  },
+  "devDependencies": {
+    "vue-cli": "^2.8.1"
+  }
+}

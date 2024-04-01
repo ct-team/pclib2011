@@ -2,7 +2,7 @@ import gulp from 'gulp';
 import uglify from 'gulp-uglify';
 import minifycss from 'gulp-minify-css';
 import replace from 'gulp-replace';
-import useref from 'gulp-useref';
+// import useref from 'gulp-useref';
 import assetRev from 'gulp-rev';
 import revCollector from 'gulp-rev-collector';
 import clean from 'gulp-clean';
@@ -138,8 +138,7 @@ function start(cb) {
         function () {
             console.log(
                 '\x1B[32m%s\x1B[32m',
-                'Server started http://localhost:' + config.devServer.port,
-                '\n http://a.admin.ct108.org:' + config.devServer.port
+                `Server started \n http://${config.devServer.host1}:${config.devServer.port} \n http://${config.devServer.host2}:${config.devServer.port}`
             );
         }
     );
@@ -164,9 +163,9 @@ function copysrc() {
 function copyPublic() {
     return gulp.src('public/**').pipe(gulp.dest('dest/public'));
 }
-function htmlResourceMerge() {
-    return gulp.src('dest/**/*.html').pipe(useref()).pipe(gulp.dest('dest'));
-}
+// function htmlResourceMerge() {
+//     return gulp.src('dest/**/*.html').pipe(useref()).pipe(gulp.dest('dest'));
+// }
 
 function replaceHtmlBaseUrl() {
     return gulp
@@ -199,12 +198,6 @@ function watch(cb) {
 }
 
 // 雪碧图生成
-const getMulu = function (filePath) {
-    const newPath = filePath.replace(/\\/g, '/');
-    const filename1 = newPath.substring(0, newPath.lastIndexOf('/'));
-    const filename2 = filename1.substring(filename1.lastIndexOf('/') + 1);
-    return filename2;
-};
 function spriteBuild(cb) {
     const fileSrc = 'src/sprite/';
     fs.readdir(fileSrc, (err, data) => {

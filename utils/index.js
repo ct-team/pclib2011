@@ -1,8 +1,8 @@
-const path = require('path')
-const fs = require('fs')
-const spawn = require('child_process').spawn
+const path = require('path');
+const fs = require('fs');
+const spawn = require('child_process').spawn;
 
-const lintStyles = ['standard', 'airbnb']
+const lintStyles = ['standard', 'airbnb'];
 
 /**
  * Sorts dependencies in package.json alphabetically.
@@ -13,12 +13,15 @@ exports.sortDependencies = function sortDependencies(data) {
   const packageJsonFile = path.join(
     data.inPlace ? '' : data.destDirName,
     'package.json'
-  )
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonFile))
-  packageJson.devDependencies = sortObject(packageJson.devDependencies)
-  packageJson.dependencies = sortObject(packageJson.dependencies)
-  fs.writeFileSync(packageJsonFile, JSON.stringify(packageJson, null, 2) + '\n')
-}
+  );
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonFile));
+  packageJson.devDependencies = sortObject(packageJson.devDependencies);
+  packageJson.dependencies = sortObject(packageJson.dependencies);
+  fs.writeFileSync(
+    packageJsonFile,
+    JSON.stringify(packageJson, null, 2) + '\n'
+  );
+};
 
 /**
  * Runs `npm install` in the project directory
@@ -30,12 +33,12 @@ exports.installDependencies = function installDependencies(
   executable = 'npm',
   color
 ) {
-  console.log(`\n\n# ${color('Installing project dependencies ...')}`)
-  console.log('# ========================\n')
+  console.log(`\n\n# ${color('Installing project dependencies ...')}`);
+  console.log('# ========================\n');
   return runCommand(executable, ['install'], {
     cwd,
-  })
-}
+  });
+};
 
 /**
  * Runs `npm run lint -- --fix` in the project directory
@@ -48,18 +51,18 @@ exports.runLintFix = function runLintFix(cwd, data, color) {
       `\n\n${color(
         'Running eslint --fix to comply with chosen preset rules...'
       )}`
-    )
-    console.log('# ========================\n')
+    );
+    console.log('# ========================\n');
     const args =
       data.autoInstall === 'npm'
         ? ['run', 'lint', '--', '--fix']
-        : ['run', 'lint', '--fix']
+        : ['run', 'lint', '--fix'];
     return runCommand(data.autoInstall, args, {
       cwd,
-    })
+    });
   }
-  return Promise.resolve()
-}
+  return Promise.resolve();
+};
 
 /**
  * Prints the final message with instructions of necessary next steps.
@@ -79,9 +82,9 @@ To get started:
   )}
   
 Documentation can be found at https://vuejs-templates.github.io/webpack
-`
-  console.log(message)
-}
+`;
+  console.log(message);
+};
 
 /**
  * If the user will have to run lint --fix themselves, it returns a string
@@ -93,7 +96,7 @@ function lintMsg(data) {
     data.lint &&
     lintStyles.indexOf(data.lintConfig) !== -1
     ? 'npm run lint -- --fix (or for yarn: yarn run lint --fix)\n  '
-    : ''
+    : '';
 }
 
 /**
@@ -102,7 +105,7 @@ function lintMsg(data) {
  * @param {Object} data Data from the questionnaire
  */
 function installMsg(data) {
-  return !data.autoInstall ? 'npm install (or if using yarn: yarn)\n  ' : ''
+  return !data.autoInstall ? 'npm install (or if using yarn: yarn)\n  ' : '';
 }
 
 /**
@@ -126,21 +129,22 @@ function runCommand(cmd, args, options) {
         },
         options
       )
-    )
+    );
 
     spwan.on('exit', () => {
-      resolve()
-    })
-  })
+      resolve();
+    });
+  });
 }
 
 function sortObject(object) {
   // Based on https://github.com/yarnpkg/yarn/blob/v1.3.2/src/config.js#L79-L85
-  const sortedObject = {}
+  console.log('object', object);
+  const sortedObject = {};
   Object.keys(object)
     .sort()
-    .forEach(item => {
-      sortedObject[item] = object[item]
-    })
-  return sortedObject
+    .forEach((item) => {
+      sortedObject[item] = object[item];
+    });
+  return sortedObject;
 }

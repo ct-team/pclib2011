@@ -33,7 +33,7 @@ export default {
         }
     },
     devServer: {
-        port: 1506, // 端口号
+        port: 1507, // 端口号
         host1: 'localhost', // 主机名1
         host2: 'a.admin.ct108.org', // 主机名2
         proxy: {

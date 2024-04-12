@@ -14,6 +14,7 @@ src
       |-- js    // 脚本文件
       |-- img   // 图片文件
       |-- sass  // sass样式文件 只存放scss模块文件 【打包后会删除】
+      |-- lib    // 第三方库文件 【打包后会删除】
   |-- sprite    // 雪碧图文件 【打包后会删除】
   |-- index.html    // 页面文件
 
@@ -22,6 +23,8 @@ src
 ## requirejs 配置
 
 必须配置 `build-user/config.js` 文件
+
+paths 配置 当前不支持 只能在和 gulpfile 内一致 否则打包会报错
 
 ```
 //正常配置

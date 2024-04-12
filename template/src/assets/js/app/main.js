@@ -3,11 +3,10 @@ var baseUrl = `process.env.BASE_URL`;
 requirejs.config({
     // 基础路径
     baseUrl: baseUrl + 'assets/js/app/',
-    urlArgs: '_v=2024032801',
-    // 映射路径
-    paths: {}
+    urlArgs: '_v=2024032801'
 });
 
-requirejs(['./a'], function (a) {
+requirejs(['./a', '../../libs/utils/b'], function (a, b) {
     a.init();
+    b.init();
 });

@@ -19,15 +19,19 @@ import preprocess from 'gulp-preprocess';
 // import { deleteAsync } from 'del';
 import babel from 'gulp-babel';
 import glob from 'glob';
+import portfinder from 'portfinder';
 //获取环境
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const envConfig = config.envConfig[NODE_ENV];
 const BASE_URL =
     NODE_ENV === 'development' ? '' : envConfig.domainUrl + config.appUrl;
-
+const modeConfig = {
+    build: 'dest',
+    serve: 'destServer',
+    mode: ''
+};
 //sass 初始化
 const sass = gulpSass(dartSass);
-
 function sassCompile() {
     return gulp
         .src('src/assets/css/*.scss')
@@ -46,7 +50,7 @@ function replaceEnv() {
     const currentEnvData = JSON.parse(fs.readFileSync(`.env.${NODE_ENV}.json`));
     const Env = Object.assign(envData, currentEnvData, { NODE_ENV, BASE_URL });
     return gulp
-        .src('dest/**/*.{html,js,css}')
+        .src(`${modeConfig.mode}/**/*.{html,js,css}`)
         .pipe(preprocess({ context: { NODE_ENV: NODE_ENV } }))
         .pipe(replace('%BASE_URL%', BASE_URL))
         .pipe(
@@ -57,11 +61,12 @@ function replaceEnv() {
                 }
             )
         )
-        .pipe(gulp.dest('dest/', { overwrite: true }));
+        .pipe(gulp.dest(modeConfig.mode, { overwrite: true }));
 }
 function copyRequireBuild() {
     return gulp
         .src('dest/.build/assets/**', { allowEmpty: true })
+        .pipe(clean())
         .pipe(gulp.dest('dest/assets'));
 }
 function requireBuild(cb) {
@@ -72,7 +77,11 @@ function requireBuild(cb) {
 
     config.requirejs.forEach(function (item) {
         gulp.src('dest/' + item.Entry + item.Name)
-            .pipe(requirejsOptimize({ optimize: 'none' }))
+            .pipe(
+                requirejsOptimize({
+                    optimize: 'none'
+                })
+            )
             .pipe(gulp.dest('dest/.build/' + item.Entry));
 
         gulp.src('dest/' + item.Entry, { read: false }).pipe(clean());
@@ -101,54 +110,67 @@ function transformCss(cb) {
 
 function setHash() {
     return gulp
-        .src(['dest/assets/**', '!dest/assets/**/*.js'])
+        .src(['dest/assets/**', '!dest/assets/libs/**'])
         .pipe(assetRev())
-        .pipe(gulp.dest('dest/assets'))
+        .pipe(gulp.dest('dest/.build/assets'))
         .pipe(assetRev.manifest())
-        .pipe(gulp.dest('dest/.build/rev'));
+        .pipe(gulp.dest('dest/rev'));
 }
 function replaceHash() {
     return gulp
-        .src(['dest/.build/rev/rev-manifest.json', 'dest/**/*.{html,css}'])
+        .src(['dest/rev/rev-manifest.json', 'dest/.build/**/*.{html,css}'])
         .pipe(revCollector())
-        .pipe(gulp.dest('dest'));
+        .pipe(gulp.dest('dest/.build'));
 }
 function start(cb) {
-    connect.server(
-        {
-            /*根路径*/
-            root: './dest',
-            /*开启浏览器自动刷新*/
-            livereload: true,
-            host: '0.0.0.0', //ip可访问
-            /*端口号*/
-            port: config.devServer.port,
-            /*使用代理服务*/
-            middleware: function (connect, opt) {
-                var list = [];
-                for (var key in config.devServer.proxy) {
-                    list.push(
-                        createProxyMiddleware(key, config.devServer.proxy[key])
-                    );
-                }
-
-                return list;
-            }
-        },
-        function () {
-            console.log(
-                '\x1B[32m%s\x1B[32m',
-                `Server started \n http://${config.devServer.host1}:${config.devServer.port} \n http://${config.devServer.host2}:${config.devServer.port}`
-            );
+    portfinder.basePort = config.devServer.port; // 设置起始端口
+    portfinder.getPort(function (err, port) {
+        if (err) {
+            done(err);
+            return;
         }
-    );
+        connect.server(
+            {
+                /*根路径*/
+                root: `./${modeConfig.serve}`,
+                /*开启浏览器自动刷新*/
+                livereload: true,
+                host: '0.0.0.0', //ip可访问
+                /*端口号*/
+                port: port,
+                /*使用代理服务*/
+                middleware: function (connect, opt) {
+                    var list = [];
+                    for (var key in config.devServer.proxy) {
+                        list.push(
+                            createProxyMiddleware(
+                                key,
+                                config.devServer.proxy[key]
+                            )
+                        );
+                    }
+
+                    return list;
+                }
+            },
+            function () {
+                console.log(
+                    '\x1B[32m%s\x1B[32m',
+                    `Server started \n http://${config.devServer.host1}:${port} \n http://${config.devServer.host2}:${port}`
+                );
+            }
+        );
+    });
+
     cb();
 }
 function cleanDist() {
     return gulp.src('dist', { allowEmpty: true, read: false }).pipe(clean());
 }
 function cleanDest() {
-    return gulp.src('dest', { allowEmpty: true, read: false }).pipe(clean());
+    return gulp
+        .src(modeConfig.mode, { allowEmpty: true, read: false })
+        .pipe(clean());
 }
 function copysrc() {
     return gulp
@@ -158,18 +180,15 @@ function copysrc() {
             '!src/sprite/**',
             '!src/assets/**/*.scss'
         ])
-        .pipe(gulp.dest('dest'));
+        .pipe(gulp.dest(modeConfig.mode));
 }
 function copyPublic() {
-    return gulp.src('public/**').pipe(gulp.dest('dest/public'));
+    return gulp.src('public/**').pipe(gulp.dest(`${modeConfig.serve}/public`));
 }
-// function htmlResourceMerge() {
-//     return gulp.src('dest/**/*.html').pipe(useref()).pipe(gulp.dest('dest'));
-// }
 
 function replaceHtmlBaseUrl() {
     return gulp
-        .src('dest/**/*.html')
+        .src('dest/.build/**/*.html')
         .pipe(replace(/(=\s*)(['"]*)(\/*)public\//g, '$1$2'))
         .pipe(
             replace(
@@ -177,10 +196,10 @@ function replaceHtmlBaseUrl() {
                 '$1$2' + BASE_URL + 'assets/'
             )
         )
-        .pipe(gulp.dest('dest/'));
+        .pipe(gulp.dest('dest/.build'));
 }
 function connectReload() {
-    return gulp.src('dest/**/*.html').pipe(connect.reload());
+    return gulp.src(`${modeConfig.serve}/**/*.html`).pipe(connect.reload());
 }
 function watch(cb) {
     gulp.watch(['src/assets/**/*.scss'], gulp.series(sassCompile));
@@ -230,7 +249,9 @@ function spriteBuild(cb) {
 }
 
 function moveDestToDist() {
-    return gulp.src(['dest/**', '!dest/.build']).pipe(gulp.dest('dist'));
+    return gulp
+        .src(['dest/.build/**', '!dest/.build/assets/libs/**'])
+        .pipe(gulp.dest('dist'));
 }
 function movePublicToDist() {
     return gulp.src('public/**').pipe(gulp.dest('dist'));
@@ -241,16 +262,29 @@ function moveFileToEnv() {
         .src('dist/**', { ignore: 'dist/assets/**' })
         .pipe(gulp.dest(`dist/${fileDir}/`));
 }
-const filterToDest = gulp.series(cleanDest, sassCompile, copysrc, replaceEnv);
+function moveHtmlToBuild() {
+    return gulp.src('dest/**/*.html').pipe(gulp.dest('dest/.build'));
+}
+function modeSetBuild(cb) {
+    modeConfig.mode = modeConfig.build;
+    cb();
+}
+function modeSetServe(cb) {
+    modeConfig.mode = modeConfig.serve;
+    cb();
+}
+const filterToFile = gulp.series(cleanDest, sassCompile, copysrc, replaceEnv);
 
 const build = gulp.series(
+    modeSetBuild,
     cleanDist,
-    filterToDest,
+    filterToFile,
     requireBuild,
     copyRequireBuild,
     transformJs,
     transformCss,
     setHash,
+    moveHtmlToBuild,
     replaceHash,
     replaceHtmlBaseUrl,
     moveDestToDist,
@@ -260,5 +294,11 @@ const build = gulp.series(
 
 export default build;
 
-export const serve = gulp.series(filterToDest, copyPublic, watch, start);
+export const serve = gulp.series(
+    modeSetServe,
+    filterToFile,
+    copyPublic,
+    watch,
+    start
+);
 export const sprite = spriteBuild;

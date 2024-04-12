@@ -1,76 +1,8 @@
 .m-a1 {
-  margin: 0 auto;
-  width: 886px;
-  height: 600px;
-  background: url("../img/a1/bg.jpg");
-  position: relative;
-  overflow: hidden; }
-  .m-a1 .m-act-time {
-    position: absolute;
-    top: 12px;
-    left: 458px;
-    color: #581d27;
-    font-size: 14px;
-    font-weight: 700; }
-  .m-a1 .m-counttime {
-    position: absolute;
-    top: 242px;
-    left: 358px;
-    color: #fbf6d3;
-    font-size: 38px;
-    width: 175px;
-    height: 46px;
-    line-height: 46px;
-    text-align: center;
-    font-weight: 700;
-    overflow: hidden; }
-  .m-a1 .m-area-rank, .m-a1 .m-person-rank {
-    position: absolute;
-    top: 473px;
-    left: 111px;
-    color: #fff065;
-    font-size: 16px;
-    width: 100px;
-    height: 56px;
-    overflow: hidden; }
-    .m-a1 .m-area-rank span, .m-a1 .m-person-rank span {
-      float: left;
-      display: inline-block;
-      width: 100px;
-      height: 25px;
-      line-height: 25px;
-      text-align: center;
-      margin-bottom: 6px; }
-  .m-a1 .m-person-rank {
-    position: absolute;
-    top: 473px;
-    left: 730px; }
-  .m-a1 .m-btn a {
-    text-indent: -9999px;
-    display: inline-block; }
-  .m-a1 .m-btn .u-btn-recharge {
-    position: absolute;
-    top: 378px;
-    left: 370px;
-    background-image: url("../img/a1/a1-btn.png");
-    background-position: -212px  0px;
-    width: 150px;
-    height: 42px; }
-    .m-a1 .m-btn .u-btn-recharge:hover {
-      background-image: url("../img/a1/a1-btn.png");
-      background-position: -212px  -47px;
-      width: 150px;
-      height: 42px; }
-  .m-a1 .m-btn .u-btn-rule {
-    position: absolute;
-    top: 430px;
-    left: 346px;
-    background-image: url("../img/a1/a1-btn.png");
-    background-position: 0px  -98px;
-    width: 207px;
-    height: 93px; }
-    .m-a1 .m-btn .u-btn-rule:hover {
-      background-image: url("../img/a1/a1-btn.png");
-      background-position: 0px  0px;
-      width: 207px;
-      height: 93px; }
+    margin: 0 auto;
+    width: 886px;
+    height: 600px;
+    background: url('../img/pk.gif');
+    position: relative;
+    overflow: hidden;
+}

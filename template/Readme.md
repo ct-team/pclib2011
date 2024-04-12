@@ -39,6 +39,12 @@ requirejs:[]
 
 ```
 
+## sprite 打包
+
+图片文件夹 只能为一级不能嵌套
+图片只支持 png jpg
+模板 css sprite-temp.css 必须在图片文件夹内 可拷贝根目录下模板
+
 ## 静态资源
 
 ```

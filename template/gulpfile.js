@@ -230,15 +230,15 @@ function spriteBuild(cb) {
                 return;
             }
             const outPath = 'sprite/' + fileName;
-
-            gulp.src(fileSrc + fileName + '/*.*')
+            console.log(fileSrc + fileName + '/sprite-temp.css', outPath);
+            gulp.src(fileSrc + fileName + '/*.{png,jpg}')
                 .pipe(
                     spritesmith({
                         imgName: outPath + '.png',
                         cssName: outPath + '.scss', //保存合并后对于css样式的地址
                         padding: 5, //合并时两个图片的间距
                         //algorithm: 'binary-tree', //形状 top-down[|]、left-right[-]、diagonal[\]、alt-diagonal[/]、binary-tree[+]
-                        cssTemplate: fileSrc + 'sprite-temp.css'
+                        cssTemplate: fileSrc + fileName + '/sprite-temp.css'
                     })
                 )
                 .pipe(gulp.dest('src/'));

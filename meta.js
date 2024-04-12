@@ -18,7 +18,7 @@ module.exports = {
     // When running tests for the template, this adds answers for the selected scenario
     before: addTestAnswers,
   },
-  skipInterpolation: ['src/**/*.vue', 'node_modules/**'],
+  skipInterpolation: ['src/**', 'node_modules/**'],
   helpers: {
     if_or(v1, v2, options) {
       if (v1 || v2) {

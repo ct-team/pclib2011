@@ -38,7 +38,7 @@ function sassCompile() {
         .pipe(sass()) // 转成CSS
         .pipe(
             autoprefixer({
-                overrideBrowserslist: ['ie > 6'],
+                overrideBrowserslist: ['last 2 versions', 'ie > 6'],
                 cascade: false
             })
         ) // 补全
